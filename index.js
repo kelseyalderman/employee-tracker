@@ -1,4 +1,12 @@
 const inquirer = require("inquirer");
+const db = require("./db/connection.js");
+const cTable = require("console.table");
+
+// Connect to the database
+db.connect((err) => {
+  if (err) throw err;
+  userOptions();
+});
 
 const userOptions = () => {
   return inquirer
@@ -46,8 +54,6 @@ const userOptions = () => {
       }
     });
 };
-
-userOptions();
 
 // View all departments
 
