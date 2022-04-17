@@ -474,12 +474,16 @@ const removeEmployee = () => {
       .then((res) => {
         employeeId = res.employeeId;
 
-        db.query(`DELETE FROM role WHERE id = ?`, employeeId, (err, res) => {
-          if (err) throw err;
-          console.log("Employee has been removed.");
+        db.query(
+          `DELETE FROM employee WHERE id = ?`,
+          employeeId,
+          (err, res) => {
+            if (err) throw err;
+            console.log("Employee has been removed.");
 
-          userOptions();
-        });
+            userOptions();
+          }
+        );
       });
   });
 };
