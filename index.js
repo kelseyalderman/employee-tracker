@@ -22,8 +22,11 @@ const userOptions = () => {
           "View all roles",
           "View all employees",
           "Add a department",
+          "Remove a department",
           "Add a role",
+          "Remove a role",
           "Add an employee",
+          "Remove an employee",
           "Update an employee role",
           "Update an employee's manager",
           "Exit",
@@ -45,11 +48,20 @@ const userOptions = () => {
         case "Add a department":
           addDepartment();
           break;
+        case "Remove a department":
+          removeDepartment();
+          break;
         case "Add a role":
           addRole();
           break;
+        case "Remove a role":
+          removeRole();
+          break;
         case "Add an employee":
           addEmployee();
+          break;
+        case "Remove an employee":
+          removeEmployee();
           break;
         case "Update an employee role":
           updateEmployeeRole();
@@ -368,6 +380,106 @@ const updateEmployeeManager = () => {
               });
           }
         );
+      });
+  });
+};
+
+// Delete a department
+const removeDepartment = () => {
+  db.query(`SELECT * FROM department`, (err, departmentRes) => {
+    if (err) throw error;
+    const departmentChoices = [];
+    departmentRes.forEach(({ id, name }) => {
+      departmentChoices.push({
+        name: name,
+        value: id,
+      });
+    });
+
+    inquirer
+      .prompt({
+        type: "list",
+        name: "departmentId",
+        message: "What department would you like to remove?",
+        choices: departmentChoices,
+      })
+      .then((res) => {
+        departmentId = res.departmentId;
+
+        db.query(
+          `DELETE FROM department WHERE id = ?`,
+          departmentId,
+          (err, res) => {
+            if (err) throw err;
+            console.log("The department has been removed.");
+
+            userOptions();
+          }
+        );
+      });
+  });
+};
+
+// Delete a role
+const removeRole = () => {
+  db.query(`SELECT * FROM role`, (err, roleRes) => {
+    if (err) throw err;
+    const roleChoices = [];
+    roleRes.forEach(({ id, title }) => {
+      roleChoices.push({
+        name: title,
+        value: id,
+      });
+    });
+
+    inquirer
+      .prompt({
+        type: "list",
+        name: "roleId",
+        message: "Which role would you like to remove?",
+        choices: roleChoices,
+      })
+      .then((res) => {
+        roleId = res.roleId;
+
+        db.query(`DELETE FROM role WHERE id = ?`, roleId, (err, res) => {
+          if (err) throw err;
+          console.log("The role has been removed.");
+
+          userOptions();
+        });
+      });
+  });
+};
+
+// Delete an employee
+const removeEmployee = () => {
+  db.query(`SELECT * FROM employee`, (err, employeeRes) => {
+    if (err) throw err;
+    const employeeChoices = [];
+    employeeRes.forEach(({ id, first_name, last_name }) => {
+      employeeChoices.push({
+        name: first_name + " " + last_name,
+        value: id,
+      });
+    });
+
+    inquirer
+      .prompt({
+        type: "list",
+        name: "employeeId",
+        message: "Which employee would you like to remove?",
+        choices: employeeChoices,
+      })
+      .then((res) => {
+        employeeId = res.employeeId;
+
+        db.query(`DELETE FROM role WHERE id = ?`, employeeId, (err, res) => {
+          if (err) throw err;
+          console.log("Employee has been removed.");
+
+          userOptions();
+        });
       });
   });
 };
