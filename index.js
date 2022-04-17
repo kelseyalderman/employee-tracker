@@ -1,3 +1,4 @@
+// Dependencies
 const inquirer = require("inquirer");
 const db = require("./db/connection.js");
 const cTable = require("console.table");
@@ -8,6 +9,7 @@ db.connect((err) => {
   userOptions();
 });
 
+// Prompt user
 const userOptions = () => {
   return inquirer
     .prompt([
@@ -119,6 +121,55 @@ const addDepartment = () => {
 };
 
 // Add a role
+const addRole = () => {
+  const departments = [];
+  db.query(
+    "SELECT department.id, department.name FROM department;",
+    (err, res) => {
+      if (err) throw err;
+
+      res.forEach((department) => {
+        let departmentChoice = {
+          name: department.name,
+          value: department.id,
+        };
+        departments.push(departmentChoice);
+      });
+
+      let addRolePrompt = [
+        {
+          type: "input",
+          name: "title",
+          message: "Role title:",
+        },
+        {
+          type: "input",
+          name: "salary",
+          message: "Salary:",
+        },
+        {
+          type: "list",
+          name: "department",
+          message: "Department:",
+          choices: departments,
+        },
+      ];
+
+      inquirer.prompt(addRolePrompt).then((response) => {
+        const query = `INSERT INTO ROLE (title, salary, department_id) VALUES (?)`;
+        db.query(
+          query,
+          [[response.title, response.salary, response.department]],
+          (err, res) => {
+            if (err) throw err;
+            console.log(`Added ${response.title} to roles.`);
+            userOptions();
+          }
+        );
+      });
+    }
+  );
+};
 
 // Add an employee
 
